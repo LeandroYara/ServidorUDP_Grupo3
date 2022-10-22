@@ -20,7 +20,7 @@ print ("Se establecio la comunicación con el servidor")
 print("IP y puerto del servidor: " + addr)
 print ("Nombre del archivo por recibir: ", fileName)
 
-file = open(fileName, 'wb')
+file = open("ArchivosEnvio/" + fileName + numeroCliente, 'wb')
 
 while True:
     ready = select.select([sock], [], [], timeout)
