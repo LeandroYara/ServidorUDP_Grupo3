@@ -1,40 +1,72 @@
 import os
 import socket
+import threading
 import time
 import sys
+import tqdm
 
-UDP_IP = "127.0.0.1"
-UDP_PORT = 5005
-ADDR = (UDP_IP, UDP_PORT)
+IP = "127.0.0.1"
+PORT = 5005
+ADDR = (IP, PORT)
 SIZE = 1024
-NCL = 1
 
-tipo = input("Ingrese 1 si quiere enviar el archivo de 100MB o ingrese 2 si quiere enviar el archivo de 250MB: ")
+def main():
+    
+    cuentaCliente = 1
+    basePuerto = PORT + 1
 
-if tipo == "1":
-    filePath = "ArchivosEnvio/100MB.bin"
-elif tipo == "2":
-    filePath = "ArchivosEnvio/250MB.bin"
+    tipo = input("Ingrese 1 si quiere enviar el archivo de 10MB o ingrese 2 si quiere enviar el archivo de 5MB: ")
+    clientesSimultaneos = int(input("Ingrese el numero de usuarios concurrentes que quiere aceptar: "))
     
-fileName = os.path.basename(filePath)
+    barrera = threading.Barrier(clientesSimultaneos)
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(ADDR)
+    if tipo == "1":
+        filePath = "ArchivosEnvio/10MB.bin"
+    elif tipo == "2":
+        filePath = "ArchivosEnvio/5MB.bin"
+    
+    fileName = os.path.basename(filePath)
+    fileSize = os.path.getsize("ArchivosEnvio/" + fileName)
 
-while (True):
+    sockTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sockTCP.bind(ADDR)
+    sockTCP.listen()
+    print(f"El servidor esta escuchando en ({IP}, {PORT})...")
     
-    mensaje, addrc = sock.recvfrom(SIZE)
-    data = [fileName, NCL]
-    NCL += 1
-    print(addrc + ": " + mensaje)
+    while True:
+        conn, addr = sockTCP.accept()
+        sockTCP.send(str(cuentaCliente).encode())
+        thread = threading.Thread(target=handle_client, args=(addr, barrera, fileName, fileSize, cuentaCliente, IP, basePuerto))
+        cuentaCliente += 1
+        thread.start()
+        print(f"[CONEXIONES ACTIVAS]: {threading.active_count() - 1}")
+
+def handle_client(addr, barrera, fileName, fileSize, cuentaCliente, IP, basePuerto):
     
-    sock.sendto(data, addrc)
+    sockUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sockUDP.bind((IP, basePuerto + cuentaCliente))
+    barrera.wait()
     
-    print ("Enviando %s ..." % fileName)
-    file = open("ArchivosEnvio/" + fileName, "r")
+    inicio = time.time()
+    mensaje, addr = sockUDP.recvfrom(SIZE)
+    print("(" + str(addr[0]) + ", " + str(addr[1]) + ")" + ": " + mensaje.decode())
+    sockUDP.sendto(fileName.encode(), addr)
+    sockUDP.sendto(cuentaCliente.to_bytes(2, 'little'), addr)
+    
+    print(f"Enviando {fileName} al cliente {cuentaCliente}...")
+    file = open("ArchivosEnvio/" + fileName, "rb")
     data = file.read(SIZE)
+    
+    progress = tqdm.tqdm(range(fileSize), f"Enviando {fileName}", unit="B", unit_scale=True, unit_divisor=1024)
     while(data):
-        if(sock.sendto(data, addrc)):
+        if(sockUDP.sendto(data, addr)):
             data = file.read(SIZE)
-            time.sleep(0.02) # Give receiver a bit time to save
+            progress.update(len(data))
     file.close()
+    print(fileName + " enviado al cliente " + cuentaCliente + "!")
+    
+    final = time.time()
+    tiempoProceso = final - inicio
+    print(f"El tiempo de procesamiento y envio para el cliente {cuentaCliente} es: {tiempoProceso}")
+    
+main()
