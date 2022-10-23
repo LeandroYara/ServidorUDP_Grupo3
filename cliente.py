@@ -1,3 +1,5 @@
+import datetime
+import os
 import random
 import socket
 import select
@@ -24,11 +26,12 @@ def main():
     puertoNuevo = PORTC + numeroCliente
     print(f"Puerto actual: {puertoNuevo}")
     sockTCP.send(puertoNuevo.to_bytes(3, 'little'))
+    conexCod = sockTCP.recv(1024)
+    conexionesSimultaneas = int.from_bytes(conexCod, 'little')
+    print(f"Conexiones simultaneas esperadas: {conexionesSimultaneas}")
     
     sockUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sockUDP.bind((IPC, puertoNuevo))
-
-    inicio = time.time()
 
     fileCod, addr = sockUDP.recvfrom(1024)
     fileName = fileCod.decode()
@@ -37,7 +40,10 @@ def main():
     print("IP y puerto del servidor: " + "(" + str(addr[0]) + ", " + str(addr[1]) + ")")
     print("Nombre del archivo por recibir: " + fileName)
 
-    file = open("ArchivosRecibidos/"+ str(numeroCliente) + "-" + fileName, 'wb')
+    file = open(f"ArchivosRecibidos/{numeroCliente}-Prueba-{conexionesSimultaneas}", 'wb')
+    
+    now = datetime.datetime.now()
+    inicio = time.time()
 
     while True:
         ready = select.select([sockUDP], [], [], timeout)
@@ -52,5 +58,24 @@ def main():
     final = time.time()
     tiempoProceso = final - inicio
     print(f"Tiempo de comunicacion y envio: {tiempoProceso}")
+    
+    filesize = os.path.getsize(f"ArchivosRecibidos/{numeroCliente}-Prueba-{conexionesSimultaneas}")
+    
+    year = str(now)[:4]
+    month = str(now)[5:7]
+    day = str(now)[8:10]
+    hour = str(now)[11:13]
+    minute = str(now)[14:16]
+    second = str(now)[17:19]
+    
+    save_path = 'Logs/'
+    file_name = 'C'+ str(numeroCliente) + '-' + year + '-' + month + '-' + day + '-' + hour + '-' + minute + '-' + second + '-' + fileName + '-' + str(conexionesSimultaneas) + '-' + 'log.txt' 
+    completeName = os.path.join(save_path,file_name)
+    newFile = open(completeName, 'w')
+    newFile.write('El archivo se ha enviado exitosamente'+'\n')
+    newFile.write('El archivo enviado fue: ' + fileName +'\n')
+    newFile.write('El archivo tiene un tamano de: ' + str(filesize) + ' bytes\n')
+    newFile.write('El cliente al que le fue enviado es: ' + str(numeroCliente) +'\n')
+    newFile.write(f'El tiempo de transferencia para este cliente fue {tiempoProceso} segundos\n')
     
 main()
