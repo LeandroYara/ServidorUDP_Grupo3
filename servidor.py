@@ -34,22 +34,22 @@ def main():
     
     while True:
         conn, addr = sockTCP.accept()
-        sockTCP.send(cuentaCliente.to_bytes(2, 'little'))
-        puertoCod = sockTCP.recv(1024)
+        conn.send(cuentaCliente.to_bytes(2, 'little'))
+        puertoCod = conn.recv(1024)
         puertoNuevo = int.from_bytes(puertoCod, 'little')
-        thread = threading.Thread(target=handle_client, args=(addr, barrera, fileName, fileSize, cuentaCliente, puertoNuevo))
+        thread = threading.Thread(target=handle_client, args=(addr, barrera, fileName, fileSize, cuentaCliente, puertoNuevo, IPS, PORTS))
         cuentaCliente += 1
         thread.start()
         print(f"[CONEXIONES ACTIVAS]: {threading.active_count() - 1}")
 
-def handle_client(addr, barrera, fileName, fileSize, cuentaCliente, puertoNuevo):
+def handle_client(addr, barrera, fileName, fileSize, cuentaCliente, puertoNuevo, IPS, PORTS):
     
-    sockUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sockUDP.bind((addr[0], puertoNuevo))
     barrera.wait()
+    sockUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sockUDP.bind((IPS, PORTS + cuentaCliente))
     
     inicio = time.time()
-    sockUDP.sendto(fileName.encode(), addr)
+    sockUDP.sendto(fileName.encode(), (addr[0], puertoNuevo))
     
     print(f"Enviando {fileName} al cliente {cuentaCliente}...")
     file = open("ArchivosEnvio/" + fileName, "rb")
@@ -57,11 +57,11 @@ def handle_client(addr, barrera, fileName, fileSize, cuentaCliente, puertoNuevo)
     
     progress = tqdm.tqdm(range(fileSize), f"Enviando {fileName}", unit="B", unit_scale=True, unit_divisor=1024)
     while(data):
-        if(sockUDP.sendto(data, addr)):
+        if(sockUDP.sendto(data, (addr[0], puertoNuevo))):
             data = file.read(SIZE)
             progress.update(len(data))
     file.close()
-    print(fileName + " enviado al cliente " + cuentaCliente + "!")
+    print(f"{fileName} enviado al cliente {cuentaCliente}!")
     
     final = time.time()
     tiempoProceso = final - inicio

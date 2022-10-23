@@ -37,12 +37,12 @@ def main():
     print("IP y puerto del servidor: " + "(" + str(addr[0]) + ", " + str(addr[1]) + ")")
     print("Nombre del archivo por recibir: " + fileName)
 
-    file = open("ArchivosRecibidos/"+ str(numeroCliente) + fileName, 'wb')
+    file = open("ArchivosRecibidos/"+ str(numeroCliente) + "-" + fileName, 'wb')
 
     while True:
         ready = select.select([sockUDP], [], [], timeout)
         if ready[0]:
-            data = sockUDP.recvfrom(1024)
+            data, addr = sockUDP.recvfrom(1024)
             file.write(data)
         else:
             print ("%s Terminado!" % fileName)
