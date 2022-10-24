@@ -86,7 +86,7 @@ def handle_client(addr, barrera, fileName, fileSize, cuentaCliente, puertoNuevo,
     newFile.write('El archivo enviado fue: ' + fileName +'\n')
     newFile.write('El archivo tiene un tamano de: ' + str(fileSize) + ' bytes\n')
     newFile.write('El cliente al que le fue enviado es: ' + str(cuentaCliente) +'\n')
-    newFile.write('El puerto del servidor es: ' + str(PORTS + cuentaCliente))
+    newFile.write('El puerto del servidor es: ' + str(PORTS + cuentaCliente) + '\n')
     newFile.write(f'El tiempo de transferencia para este cliente fue: {tiempoProceso} segundos\n')
     
 main()

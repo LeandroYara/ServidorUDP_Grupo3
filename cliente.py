@@ -82,7 +82,7 @@ def main():
     newFile.write('El archivo enviado fue: ' + fileName +'\n')
     newFile.write('El archivo tiene un tamano de: ' + str(filesize) + ' bytes\n')
     newFile.write('El cliente al que le fue enviado es: ' + str(numeroCliente) +'\n')
-    newFile.write('El puerto del cliente es: ' + str(puertoNuevo))
+    newFile.write('El puerto del cliente es: ' + str(puertoNuevo)  + '\n')
     newFile.write(f'El tiempo de transferencia para este cliente fue {tiempoProceso} segundos\n')
     
 main()
