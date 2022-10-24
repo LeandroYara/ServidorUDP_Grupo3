@@ -33,12 +33,15 @@ def main():
     sockUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sockUDP.bind((IPC, puertoNuevo))
 
-    fileCod, addr = sockUDP.recvfrom(1024)
+    fileCod, addr = sockUDP.recvfrom(SIZE)
     fileName = fileCod.decode()
+    sizeCod, addr = sockUDP.recvfrom(SIZE)
+    serverSize = int.from_bytes(sizeCod, 'little')
 
     print("Se establecio la comunicación con el servidor")
     print("IP y puerto del servidor: " + "(" + str(addr[0]) + ", " + str(addr[1]) + ")")
     print("Nombre del archivo por recibir: " + fileName)
+    print("Tamano del archivo por recibir: " + str(serverSize))
 
     file = open(f"ArchivosRecibidos/{numeroCliente}-Prueba-{conexionesSimultaneas}", 'wb')
     
@@ -48,7 +51,7 @@ def main():
     while True:
         ready = select.select([sockUDP], [], [], timeout)
         if ready[0]:
-            data, addr = sockUDP.recvfrom(1024)
+            data, addr = sockUDP.recvfrom(SIZE)
             file.write(data)
         else:
             print ("%s Terminado!" % fileName)
@@ -72,7 +75,10 @@ def main():
     file_name = 'C'+ str(numeroCliente) + '-' + year + '-' + month + '-' + day + '-' + hour + '-' + minute + '-' + second + '-' + fileName + '-' + str(conexionesSimultaneas) + '-' + 'log.txt' 
     completeName = os.path.join(save_path,file_name)
     newFile = open(completeName, 'w')
-    newFile.write('El archivo se ha enviado exitosamente'+'\n')
+    if serverSize == filesize:
+        newFile.write('El archivo se ha enviado exitosamente'+'\n')
+    else:
+        newFile.write('El archivo ha tenido un fallo o paquete faltante al enviarse'+'\n')
     newFile.write('El archivo enviado fue: ' + fileName +'\n')
     newFile.write('El archivo tiene un tamano de: ' + str(filesize) + ' bytes\n')
     newFile.write('El cliente al que le fue enviado es: ' + str(numeroCliente) +'\n')

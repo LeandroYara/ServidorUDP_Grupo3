@@ -21,9 +21,9 @@ def main():
     barrera = threading.Barrier(clientesSimultaneos)
 
     if tipo == "1":
-        filePath = "ArchivosEnvio/10MB.bin"
+        filePath = "ArchivosEnvio/100MB.bin"
     elif tipo == "2":
-        filePath = "ArchivosEnvio/5MB.bin"
+        filePath = "ArchivosEnvio/250MB.bin"
     
     fileName = os.path.basename(filePath)
     fileSize = os.path.getsize("ArchivosEnvio/" + fileName)
@@ -51,6 +51,7 @@ def handle_client(addr, barrera, fileName, fileSize, cuentaCliente, puertoNuevo,
     sockUDP.bind((IPS, PORTS + cuentaCliente))
     
     sockUDP.sendto(fileName.encode(), (addr[0], puertoNuevo))
+    sockUDP.sendto(fileSize.to_bytes(3, 'little'), (addr[0], puertoNuevo))
     
     print(f"Enviando {fileName} al cliente {cuentaCliente}...")
     file = open("ArchivosEnvio/" + fileName, "rb")
