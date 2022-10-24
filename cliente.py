@@ -5,7 +5,7 @@ import socket
 import select
 import time
 
-IPC = "192.168.1.113"
+IPC = "192.168.137.1"
 PORTC = random.randint(10000, 60000)
 IPS = "192.168.137.208"
 PORTS = 5005
