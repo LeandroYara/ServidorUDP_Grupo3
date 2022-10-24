@@ -43,7 +43,7 @@ def main():
     print("Nombre del archivo por recibir: " + fileName)
     print("Tamano del archivo por recibir: " + str(serverSize))
 
-    file = open(f"ArchivosRecibidos/{numeroCliente}-Prueba-{conexionesSimultaneas}", 'wb')
+    file = open(f"ArchivosRecibidos/{numeroCliente}-Prueba-{conexionesSimultaneas}-Archivo-{fileName}", 'wb')
     
     now = datetime.datetime.now()
     inicio = time.time()
