@@ -62,7 +62,7 @@ def main():
     tiempoProceso = final - inicio
     print(f"Tiempo de comunicacion y envio: {tiempoProceso}")
     
-    filesize = os.path.getsize(f"ArchivosRecibidos/{numeroCliente}-Prueba-{conexionesSimultaneas}")
+    filesize = os.path.getsize(f"ArchivosRecibidos/{numeroCliente}-Prueba-{conexionesSimultaneas}-Archivo-{fileName}")
     
     year = str(now)[:4]
     month = str(now)[5:7]
