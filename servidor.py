@@ -6,7 +6,7 @@ import time
 import sys
 import tqdm
 
-IPS = "127.0.0.1"
+IPS = "192.168.137.208"
 PORTS = 5005
 ADDRS = (IPS, PORTS)
 SIZE = 1024

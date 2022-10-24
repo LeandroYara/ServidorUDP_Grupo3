@@ -5,9 +5,9 @@ import socket
 import select
 import time
 
-IPC = "127.0.0.1"
+IPC = "186.154.32.216"
 PORTC = random.randint(10000, 60000)
-IPS = "127.0.0.1"
+IPS = "192.168.137.208"
 PORTS = 5005
 ADDRC = (IPC, PORTC)
 ADDRS = (IPS, PORTS)
