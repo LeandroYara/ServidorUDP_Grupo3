@@ -15,7 +15,7 @@ def main():
     
     cuentaCliente = 1
 
-    tipo = input("Ingrese 1 si quiere enviar el archivo de 10MB o ingrese 2 si quiere enviar el archivo de 5MB: ")
+    tipo = input("Ingrese 1 si quiere enviar el archivo de 100MB o ingrese 2 si quiere enviar el archivo de 250MB: ")
     clientesSimultaneos = int(input("Ingrese el numero de usuarios concurrentes que quiere aceptar: "))
     
     barrera = threading.Barrier(clientesSimultaneos)
