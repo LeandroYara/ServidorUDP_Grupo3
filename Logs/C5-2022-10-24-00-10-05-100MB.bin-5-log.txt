@@ -1,0 +1,6 @@
+El archivo se ha enviado exitosamente
+El archivo enviado fue: 100MB.bin
+El archivo tiene un tamano de: 104857600 bytes
+El cliente al que le fue enviado es: 5
+El puerto del cliente es: 45021
+El tiempo de transferencia para este cliente fue 10.952563285827637 segundos

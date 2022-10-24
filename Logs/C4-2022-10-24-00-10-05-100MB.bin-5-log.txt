@@ -1,0 +1,6 @@
+El archivo ha tenido un fallo o paquete faltante al enviarse
+El archivo enviado fue: 100MB.bin
+El archivo tiene un tamano de: 104367104 bytes
+El cliente al que le fue enviado es: 4
+El puerto del cliente es: 46011
+El tiempo de transferencia para este cliente fue 10.998926162719727 segundos
