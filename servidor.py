@@ -51,7 +51,7 @@ def handle_client(addr, barrera, fileName, fileSize, cuentaCliente, puertoNuevo,
     sockUDP.bind((IPS, PORTS + cuentaCliente))
     
     sockUDP.sendto(fileName.encode(), (addr[0], puertoNuevo))
-    sockUDP.sendto(fileSize.to_bytes(3, 'little'), (addr[0], puertoNuevo))
+    sockUDP.sendto(fileSize.to_bytes(8, 'little'), (addr[0], puertoNuevo))
     
     print(f"Enviando {fileName} al cliente {cuentaCliente}...")
     file = open("ArchivosEnvio/" + fileName, "rb")
@@ -59,8 +59,8 @@ def handle_client(addr, barrera, fileName, fileSize, cuentaCliente, puertoNuevo,
     
     progress = tqdm.tqdm(range(fileSize), f"Enviando {fileName}", unit="B", unit_scale=True, unit_divisor=1024)
     now = datetime.datetime.now()
-    
     inicio = time.time()
+    
     while(data):
         if(sockUDP.sendto(data, (addr[0], puertoNuevo))):
             data = file.read(SIZE)
